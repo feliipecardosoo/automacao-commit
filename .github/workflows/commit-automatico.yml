@@ -2,7 +2,7 @@ name: commit-automatico
 
 on:
     schedule:
-        - cron: '52 22 * * *'  # Runs every day at midnight
+        - cron: '00 23 * * *'  # Runs every day at midnight
     workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
