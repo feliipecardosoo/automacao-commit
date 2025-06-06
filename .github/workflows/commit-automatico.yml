@@ -1,0 +1,32 @@
+name: commit-automatico
+
+on:
+    schedule:
+        - cron: '0 0 * * *'  # Runs every day at midnight
+    workflow_dispatch:  # Allows manual triggering of the workflow
+
+jobs:
+    gerar-arquivo:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2 # clone nosso rep na máquina virtual
+              with:
+                  persist-credentials: false  # a gente vai usar token pesonalizado entao precisa disso
+
+            - name: Gerar arquivo e commit
+              run: |
+                echo "$(date '+%Y-%m-%d %H:%M:%S UTC')" > dataAtual.txt  
+                git config user.name "feliipecardosoo"                  
+                git config user.email "fglibino@gmail.com"            
+                git add dataAtual.txt                                  
+                git commit -m "Atualização diária com a data $(date)" || echo "Nada para commitar"  
+                # Faz o commit com mensagem contendo a data; se não houver mudanças, exibe "Nada para commitar"
+                git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
+                # Altera a URL remota para usar o token secreto para autenticação
+                git push origin HEAD              
+                
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usa o token de acesso pessoal para autenticação
+            # O token é necessário para permitir que o workflow faça push no repositório
